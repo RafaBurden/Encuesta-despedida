@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Formulario de contacto premium con diseño moderno y minimalista para selección de eventos exclusivos.">
+    <title>Contacto Premium | Selección de Eventos</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="top-actions">
+        <button id="exit-btn" class="btn-exit" title="Cerrar y apagar aplicación">
+            <i class="fas fa-power-off"></i> Salir
+        </button>
+    </div>
+    <div class="container">
+
+        <div class="glass-card" id="form-container">
+            <h1>Contacto</h1>
+            <p class="subtitle">Personaliza tu experiencia eligiendo una de nuestras exclusivas opciones.</p>
+            
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="opcion">¿Qué prefieres?</label>
+                    <select id="opcion" name="opcion" required>
+                        <option value="" disabled selected>Selecciona una opción...</option>
+                        <option value="cena">Cena un día a elegir</option>
+                        <option value="comida_tardeo">Comida y tardeo día a elegir</option>
+                        <option value="viaje_finde">Viaje de fin de semana</option>
+                        <option value="casa_rural">Casa rural fin de semana</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    Enviar Solicitud
+                </button>
+            </form>
+
+            <div class="success-message" id="success-msg">
+                <i class="fas fa-check-circle"></i>
+                <h2>¡Enviado con éxito!</h2>
+                <p>Nos pondremos en contacto contigo pronto para confirmar los detalles.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

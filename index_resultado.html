@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Resultados de la encuesta de despedida.">
+    <title>Resultados | Encuesta Despedida</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="results-nav">
+        <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i> Volver al Formulario</a>
+        <button id="exit-btn" class="btn-exit" title="Cerrar y apagar aplicación">
+            <i class="fas fa-power-off"></i> Salir
+        </button>
+    </nav>
+
+
+    <div class="container container-results">
+        <div class="glass-card full-width">
+            <h1>Resultados de la Encuesta</h1>
+            <p class="subtitle">Descubre qué opción es la favorita para la despedida.</p>
+
+            <div class="results-grid">
+                <!-- Gráfico Column -->
+                <div class="chart-container">
+                    <h3>Resumen de Votos</h3>
+                    <canvas id="resultsChart"></canvas>
+                </div>
+
+                <!-- Lista Column -->
+                <div class="votes-list-container">
+                    <h3>Participantes</h3>
+                    <div id="votes-list" class="votes-list">
+                        <p class="loading-text">Cargando participantes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Exit functionality
+            const exitBtn = document.getElementById('exit-btn');
+            if (exitBtn) {
+                exitBtn.addEventListener('click', async () => {
+                    if (confirm('¿Estás seguro de que quieres cerrar la aplicación y apagar el servidor?')) {
+                        try {
+                            await fetch('/api/shutdown', { method: 'POST' });
+                            document.body.innerHTML = `
+                                <div class="container container-results">
+                                    <div class="glass-card" style="text-align:center; margin-top: 100px;">
+                                        <h1>Servidor Apagado</h1>
+                                        <p>Ya puedes cerrar esta pestaña.</p>
+                                    </div>
+                                </div>`;
+                        } catch (e) {
+                            window.close();
+                        }
+                    }
+                });
+            }
+
+            try {
+
+                const response = await fetch('/api/results');
+                const data = await response.json();
+
+                renderChart(data.summary);
+                renderVotes(data.votes);
+            } catch (error) {
+                console.error('Error fetching results:', error);
+            }
+        });
+
+        function renderChart(summary) {
+            const ctx = document.getElementById('resultsChart').getContext('2d');
+            
+            // Mapear nombres técnicos a amigables
+            const nameMap = {
+                'cena': 'Cena',
+                'comida_tardeo': 'Comida y Tardeo',
+                'viaje_finde': 'Viaje Finde',
+                'casa_rural': 'Casa Rural'
+            };
+
+            const labels = summary.map(item => nameMap[item.tipo_evento] || item.tipo_evento);
+            const counts = summary.map(item => parseInt(item.total));
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: [
+                            'rgba(129, 140, 248, 0.8)',
+                            'rgba(74, 222, 128, 0.8)',
+                            'rgba(248, 113, 113, 0.8)',
+                            'rgba(251, 191, 36, 0.8)'
+                        ],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#f8fafc',
+                                font: { size: 14 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderVotes(votes) {
+            const list = document.getElementById('votes-list');
+            if (votes.length === 0) {
+                list.innerHTML = '<p class="empty-msg">Aún no hay votos registrados.</p>';
+                return;
+            }
+
+            list.innerHTML = votes.map(vote => `
+                <div class="vote-item">
+                    <div class="vote-info">
+                        <strong>${vote.nombre} ${vote.apellido}</strong>
+                        <span>${new Date(vote.fecha_registro).toLocaleDateString()}</span>
+                    </div>
+                    <div class="vote-badge badge-${vote.tipo_evento}">
+                        ${vote.tipo_evento.replace('_', ' ').toUpperCase()}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
